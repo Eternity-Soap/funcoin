@@ -1,0 +1,34 @@
+src/*.exe
+src/funcoin
+src/funcoind
+src/test_funcoin
+.*.swp
+*.*~*
+*.bak
+*.rej
+*.orig
+*.o
+*.patch
+.funcoin
+
+# Compilation and Qt preprocessor part
+*.qm
+Makefile
+funcoin-qt
+Funcoin-Qt.app
+
+# Unit-tests
+Makefile.test
+funcoin-qt_test
+
+# Resources cpp
+qrc_*.cpp
+
+# Qt creator
+*.pro.user
+
+# Mac specific
+.DS_Store
+build
+
+!src/leveldb*/Makefile
