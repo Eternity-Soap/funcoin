@@ -1,123 +1,116 @@
-0.8.7.5 changes
-=============
-- openssl-1.0.1k or older versions patched for CVE-2014-8275 broke compatibility with Bitcoin and Funcoin.
-  This update patches Funcoin to maintain compatibility with CVE-2014-8275 patched openssl.
-- If you are running v0.8.7.4 as distributed by funcoin.org you do not need to upgrade.
-  The binaries distributed on funcoin.org contain their own copy of openssl so they are unaffected by this issue.
+Bitcoin Core version 0.16.2 is now available from:
 
-0.8.7.4 changes
-=============
-- Enforce v2 blocks at height 710000 on mainnet, 400000 on testnet
-- Add `-maxorphantx=<n>` and `-maxorphanblocks=<n>` options for control over the maximum orphan transactions and blocks
-- Stricter memory limits on CNode
-- Upgrade OpenSSL to 1.0.1i (see https://www.openssl.org/news/secadv_20140806.txt - just to be sure, no critical issues
+  <https://bitcoincore.org/bin/bitcoin-core-0.16.2/>
 
-0.8.7.2 changes
-=============
-- Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1h for CVE-2014-0224
-                   Linux Gitian build uses Lucid 0.9.8k-7ubuntu8.18
+This is a new minor version release, with various bugfixes
+as well as updated translations.
 
-0.8.7.1 changes
-=============
-- Mac and Windows Official Gitian Builds: upgrade to openssl-1.0.1g for CVE-2014-0160
-                   Linux was not vulnerable with Lucid openssl-0.9.8k
-                   Older versions were only vulnerable with rarely used RPC SSL
-- If you build from source, be sure that your openssl is patched for CVE-2014-0160.
-- Upgrade openssl, qt, miniupnpc, zlib, libpng, qrencode
-- Many bug fixes from Bitcoin 0.8.7rc stable branch
-    including transaction malleability mitigation backports from 0.9
-- Add testnet checkpoints
-- Add new testnet seed
+Please report bugs using the issue tracker at GitHub:
 
-0.8.6.2 changes
-=============
+  <https://github.com/bitcoin/bitcoin/issues>
 
-- Windows only: Fixes issue where network connectivity can fail.
+To receive security and update notifications, please subscribe to:
 
-- Cleanup of SSE2 scrypt detection.
+  <https://bitcoincore.org/en/list/announcements/join/>
 
-- Minor fixes:
-  - s/Bitcoin/Funcoin/ in the Coin Control example
-  - Fix custom build on MacOS X 10.9
-  - Fix QT5 custom build
-  - Update Debian build instructions
-  - Update Homebrew build 
+How to Upgrade
+==============
 
-0.8.6.1 changes
-=============
+If you are running an older version, shut it down. Wait until it has completely
+shut down (which might take a few minutes for older versions), then run the
+installer (on Windows) or just copy over `/Applications/Bitcoin-Qt` (on Mac)
+or `bitcoind`/`bitcoin-qt` (on Linux).
 
-- Coin Control - experts only GUI selection of inputs before you send a transaction
+The first time you run version 0.15.0 or newer, your chainstate database will be converted to a
+new format, which will take anywhere from a few minutes to half an hour,
+depending on the speed of your machine.
 
-- Disable Wallet - reduces memory requirements, helpful for miner or relay nodes
+Note that the block database format also changed in version 0.8.0 and there is no
+automatic upgrade code from before version 0.8 to version 0.15.0 or higher. Upgrading
+directly from 0.7.x and earlier without re-downloading the blockchain is not supported.
+However, as usual, old wallet versions are still supported.
 
-- 20x reduction in default mintxfee.
+Downgrading warning
+-------------------
 
-- Up to 50% faster PoW validation, faster sync and reindexing.
+Wallets created in 0.16 and later are not compatible with versions prior to 0.16
+and will not work if you try to use newly created wallets in older versions. Existing
+wallets that were created with older versions are not affected by this.
 
-- Peers older than protocol version 70002 are disconnected.  0.8.3.7 is the oldest compatible client.
+Compatibility
+==============
 
-- Internal miner added back to Funcoin.  setgenerate now works, although it is generally a bad idea as it is significantly slower than external CPU miners.
+Bitcoin Core is extensively tested on multiple operating systems using
+the Linux kernel, macOS 10.8+, and Windows Vista and later. Windows XP is not supported.
 
-- New RPC commands: getbestblockhash and verifychain
+Bitcoin Core should also work on most other Unix-like systems but is not
+frequently tested on them.
 
-- Improve fairness of the high priority transaction space per block
+0.16.2 change log
+------------------
 
-- OSX block chain database corruption fixes
-  - Update leveldb to 1.13
-  - Use fcntl with `F_FULLSYNC` instead of fsync on OSX
-  - Use native Darwin memory barriers
-  - Replace use of mmap in leveldb for improved reliability (only on OSX)
+### Wallet
+- #13622 `c04a4a5` Remove mapRequest tracking that just effects Qt display. (TheBlueMatt)
+- #12905 `cfc6f74` [rpcwallet] Clamp walletpassphrase value at 100M seconds (sdaftuar)
+- #13437 `ed82e71` wallet: Erase wtxOrderd wtx pointer on removeprunedfunds (MarcoFalke)
 
-- Fix nodes forwarding transactions with empty vins and getting banned
+### RPC and other APIs
+- #13451 `cbd2f70` rpc: expose CBlockIndex::nTx in getblock(header) (instagibbs)
+- #13507 `f7401c8` RPC: Fix parameter count check for importpubkey (kristapsk)
+- #13452 `6b9dc8c` rpc: have verifytxoutproof check the number of txns in proof structure (instagibbs)
+- #12837 `bf1f150` rpc: fix type mistmatch in `listreceivedbyaddress` (joemphilips)
+- #12743 `657dfc5` Fix csBestBlock/cvBlockChange waiting in rpc/mining (sipa)
 
-- Network code performance and robustness improvements
+### GUI
+- #12432 `f78e7f6` [qt] send: Clear All also resets coin control options (Sjors)
+- #12617 `21dd512` gui: Show messages as text not html (laanwj)
+- #12793 `cf6feb7` qt: Avoid reseting on resetguisettigs=0 (MarcoFalke)
 
-- Additional debug.log logging for diagnosis of network problems, log timestamps by default
+### Build system
+- #13544 `9fd3e00` depends: Update Qt download url (fanquake)
+- #12573 `88d1a64` Fix compilation when compiler do not support `__builtin_clz*` (532479301)
 
-- Fix rare GUI crash on send
+### Tests and QA
+- #13061 `170b309` Make tests pass after 2020 (bmwiedemann)
+- #13192 `79c4fff` [tests] Fixed intermittent failure in `p2p_sendheaders.py` (lmanners)
+- #13300 `d9c5630` qa: Initialize lockstack to prevent null pointer deref (MarcoFalke)
+- #13545 `e15e3a9` tests: Fix test case `streams_serializedata_xor` Remove Boost dependency. (practicalswift)
+- #13304 `cbdabef` qa: Fix `wallet_listreceivedby` race (MarcoFalke)
 
-0.8.5.1 changes
-===============
+### Miscellaneous
+- #12887 `2291774` Add newlines to end of log messages (jnewbery)
+- #12859 `18b0c69` Bugfix: Include <memory> for `std::unique_ptr` (luke-jr)
+- #13131 `ce8aa54` Add Windows shutdown handler (ken2812221)
+- #13652 `20461fc` rpc: Fix that CWallet::AbandonTransaction would leave the grandchildren, etc. active (Empact)
 
-Workaround negative version numbers serialization bug.
+Credits
+=======
 
-Fix out-of-bounds check (Funcoin currently does not use this codepath, but we apply this
-patch just to match Bitcoin 0.8.5.)
+Thanks to everyone who directly contributed to this release:
 
-0.8.4.1 changes
-===============
+- 532479301
+- Ben Woosley
+- Bernhard M. Wiedemann
+- Chun Kuan Lee
+- Cory Fields
+- fanquake
+- Gregory Sanders
+- joemphilips
+- John Newbery
+- Kristaps Kaupe
+- lmanners
+- Luke Dashjr
+- MarcoFalke
+- Matt Corallo
+- Pieter Wuille
+- practicalswift
+- Sjors Provoost
+- Suhas Daftuar
+- Wladimir J. van der Laan
 
-CVE-2013-5700 Bloom: filter crash issue - Funcoin 0.8.3.7 disabled bloom by default so was 
-unaffected by this issue, but we include their patches anyway just in case folks want to 
-enable bloomfilter=1.
+And to those that reported security issues:
 
-CVE-2013-4165: RPC password timing guess vulnerability
+- Braydon Fuller
+- Himanshu Mehta
 
-CVE-2013-4627: Better fix for the fill-memory-with-orphaned-tx attack
-
-Fix multi-block reorg transaction resurrection.
-
-Fix non-standard disconnected transactions causing mempool orphans.  This bug could cause 
-nodes running with the -debug flag to crash, although it was lot less likely on Funcoin 
-as we disabled IsDust() in 0.8.3.x.
-
-Mac OSX: use 'FD_FULLSYNC' with LevelDB, which will (hopefully!) prevent the database 
-corruption issues have experienced on OSX.
-
-Add height parameter to getnetworkhashps.
-
-Fix Norwegian and Swedish translations.
-
-Minor efficiency improvement in block peer request handling.
-
-
-0.8.3.7 changes
-===============
-
-Fix CVE-2013-4627 denial of service, a memory exhaustion attack that could crash low-memory nodes.
-
-Fix a regression that caused excessive writing of the peers.dat file.
-
-Add option for bloom filtering.
-
-Fix Hebrew translation.
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/bitcoin/).

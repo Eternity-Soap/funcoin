@@ -1,185 +1,129 @@
-Mac OS X funcoind build instructions
+Mac OS X Build Instructions and Notes
 ====================================
-
-Authors
--------
-
-* Laszlo Hanyecz <solar@heliacal.net>
-* Douglas Huff <dhuff@jrbobdobbs.org>
-* Colin Dean <cad@cad.cx>
-* Gavin Andresen <gavinandresen@gmail.com>
-
-License
--------
-
-Copyright (c) 2009-2012 Bitcoin Developers
-
-Distributed under the MIT/X11 software license, see the accompanying
-file COPYING or http://www.opensource.org/licenses/mit-license.php.
-
-This product includes software developed by the OpenSSL Project for use in
-the OpenSSL Toolkit (http://www.openssl.org/).
-
-This product includes cryptographic software written by
-Eric Young (eay@cryptsoft.com) and UPnP software written by Thomas Bernard.
-
-Notes
------
-
-See `doc/readme-qt.rst` for instructions on building Funcoin-Qt, the
-graphical user interface.
-
-Tested on OS X 10.5 through 10.8 on Intel processors only. PPC is not
-supported because it is big-endian.
-
-All of the commands should be executed in a Terminal application. The
-built-in one is located in `/Applications/Utilities`.
+The commands in this guide should be executed in a Terminal application.
+The built-in one is located in `/Applications/Utilities/Terminal.app`.
 
 Preparation
 -----------
+Install the OS X command line tools:
 
-You need to install XCode with all the options checked so that the compiler
-and everything is available in /usr not just /Developer. XCode should be
-available on your OS X installation media, but if not, you can get the
-current version from https://developer.apple.com/xcode/. If you install
-Xcode 4.3 or later, you'll need to install its command line tools. This can
-be done in `Xcode > Preferences > Downloads > Components` and generally must
-be re-done or updated every time Xcode is updated.
+`xcode-select --install`
 
-There's an assumption that you already have `git` installed, as well. If
-not, it's the path of least resistance to install [Github for Mac](https://mac.github.com/)
-(OS X 10.7+) or
-[Git for OS X](https://code.google.com/p/git-osx-installer/). It is also
-available via Homebrew or MacPorts.
+When the popup appears, click `Install`.
 
-You will also need to install [Homebrew](http://mxcl.github.io/homebrew/)
-or [MacPorts](https://www.macports.org/) in order to install library
-dependencies. It's largely a religious decision which to choose, but, as of
-December 2012, MacPorts is a little easier because you can just install the
-dependencies immediately - no other work required. If you're unsure, read
-the instructions through first in order to assess what you want to do.
-Homebrew is a little more popular among those newer to OS X.
+Then install [Homebrew](https://brew.sh).
 
-The installation of the actual dependencies is covered in the Instructions
-sections below.
-
-Instructions: MacPorts
+Dependencies
 ----------------------
 
-### Install dependencies
+    brew install automake berkeley-db4 libtool boost miniupnpc openssl pkg-config protobuf python3 qt libevent
 
-Installing the dependencies using MacPorts is very straightforward.
+See [dependencies.md](dependencies.md) for a complete overview.
 
-    sudo port install boost db48@+no_java openssl miniupnpc
+If you want to build the disk image with `make deploy` (.dmg / optional), you need RSVG
 
-### Building `funcoind`
+    brew install librsvg
 
-1. Clone the github tree to get the source code and go into the directory.
+If you want to build with ZeroMQ support
+    
+    brew install zeromq
 
-        git clone git@github.com:funcoin-project/funcoin.git funcoin
-        cd funcoin
+NOTE: Building with Qt4 is still supported, however, could result in a broken UI. Building with Qt5 is recommended.
 
-2.  Build funcoind:
+Berkeley DB
+-----------
+It is recommended to use Berkeley DB 4.8. If you have to build it yourself,
+you can use [the installation script included in contrib/](/contrib/install_db4.sh)
+like so
 
-        cd src
-        make -f makefile.osx
+```shell
+./contrib/install_db4.sh .
+```
 
-3.  It is a good idea to build and run the unit tests, too:
+from the root of the repository.
 
-        make -f makefile.osx test
+**Note**: You only need Berkeley DB if the wallet is enabled (see the section *Disable-Wallet mode* below).
 
-Instructions: HomeBrew
-----------------------
-
-#### Install dependencies using Homebrew
-
-        brew install boost miniupnpc openssl berkeley-db4
-
-Note: After you have installed the dependencies, you should check that the Brew installed version of OpenSSL is the one available for compilation. You can check this by typing
-
-        openssl version
-
-into Terminal. You should see OpenSSL 1.0.1e 11 Feb 2013.
-
-If not, you can ensure that the Brew OpenSSL is correctly linked by running
-
-        brew link openssl --force
-
-Rerunning "openssl version" should now return the correct version.
-
-### Building `funcoind`
-
-1. Clone the github tree to get the source code and go into the directory.
-
-        git clone https://github.com/funcoin-project/funcoin.git
-        cd funcoin
-
-2.  Modify source in order to pick up the `openssl` library.
-
-    Edit `makefile.osx` to account for library location differences. There's a
-    diff in `contrib/homebrew/makefile.osx.patch` that shows what you need to
-    change, or you can just patch by doing
-
-        patch -p1 < contrib/homebrew/makefile.osx.patch
-
-3.  Build funcoind:
-
-        cd src
-        make -f makefile.osx
-
-4.  It is a good idea to build and run the unit tests, too:
-
-        make -f makefile.osx test
-
-Creating a release build
+Build Litecoin Core
 ------------------------
 
-A funcoind binary is not included in the Funcoin-Qt.app bundle. You can ignore
-this section if you are building `funcoind` for your own use.
+1. Clone the litecoin source code and cd into `litecoin`
 
-If you are building `litecond` for others, your build machine should be set up
-as follows for maximum compatibility:
+        git clone https://github.com/litecoin-project/litecoin
+        cd litecoin
 
-All dependencies should be compiled with these flags:
+2.  Build litecoin-core:
 
-    -mmacosx-version-min=10.5 -arch i386 -isysroot /Developer/SDKs/MacOSX10.5.sdk
+    Configure and build the headless litecoin binaries as well as the GUI (if Qt is found).
 
-For MacPorts, that means editing your macports.conf and setting
-`macosx_deployment_target` and `build_arch`:
+    You can disable the GUI build by passing `--without-gui` to configure.
 
-    macosx_deployment_target=10.5
-    build_arch=i386
+        ./autogen.sh
+        ./configure
+        make
 
-... and then uninstalling and re-installing, or simply rebuilding, all ports.
+3.  It is recommended to build and run the unit tests:
 
-As of December 2012, the `boost` port does not obey `macosx_deployment_target`.
-Download `http://gavinandresen-bitcoin.s3.amazonaws.com/boost_macports_fix.zip`
-for a fix. Some ports also seem to obey either `build_arch` or
-`macosx_deployment_target`, but not both at the same time. For example, building
-on an OS X 10.6 64-bit machine fails. Official release builds of Funcoin-Qt are
-compiled on an OS X 10.6 32-bit machine to workaround that problem.
+        make check
 
-Once dependencies are compiled, creating `Funcoin-Qt.app` is easy:
+4.  You can also create a .dmg that contains the .app bundle (optional):
 
-    make -f Makefile.osx RELEASE=1
+        make deploy
+
+5.  Installation into user directories (optional):
+
+        make install
+
+    or
+
+        cd ~/litecoin/src
+        cp litecoind /usr/local/bin/
+        cp litecoin-cli /usr/local/bin/
 
 Running
 -------
 
-It's now available at `./funcoind`, provided that you are still in the `src`
-directory. We have to first create the RPC configuration file, though.
+Litecoin Core is now available at `./src/litecoind`
 
-Run `./funcoind` to get the filename where it should be put, or just try these
-commands:
+Before running, it's recommended you create an RPC configuration file.
 
-    echo -e "rpcuser=funcoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Funcoin/funcoin.conf"
-    chmod 600 "/Users/${USER}/Library/Application Support/Funcoin/funcoin.conf"
+    echo -e "rpcuser=litecoinrpc\nrpcpassword=$(xxd -l 16 -p /dev/urandom)" > "/Users/${USER}/Library/Application Support/Litecoin/litecoin.conf"
 
-When next you run it, it will start downloading the blockchain, but it won't
-output anything while it's doing this. This process may take several hours.
+    chmod 600 "/Users/${USER}/Library/Application Support/Litecoin/litecoin.conf"
+
+The first time you run litecoind, it will start downloading the blockchain. This process could take several hours.
+
+You can monitor the download process by looking at the debug.log file:
+
+    tail -f $HOME/Library/Application\ Support/Litecoin/debug.log
 
 Other commands:
+-------
 
-    ./funcoind --help  # for a list of command-line options.
-    ./funcoind -daemon # to start the funcoin daemon.
-    ./funcoind help    # When the daemon is running, to get a list of RPC commands
+    ./src/litecoind -daemon # Starts the litecoin daemon.
+    ./src/litecoin-cli --help # Outputs a list of command-line options.
+    ./src/litecoin-cli help # Outputs a list of RPC commands when the daemon is running.
+
+Using Qt Creator as IDE
+------------------------
+You can use Qt Creator as an IDE, for litecoin development.
+Download and install the community edition of [Qt Creator](https://www.qt.io/download/).
+Uncheck everything except Qt Creator during the installation process.
+
+1. Make sure you installed everything through Homebrew mentioned above
+2. Do a proper ./configure --enable-debug
+3. In Qt Creator do "New Project" -> Import Project -> Import Existing Project
+4. Enter "litecoin-qt" as project name, enter src/qt as location
+5. Leave the file selection as it is
+6. Confirm the "summary page"
+7. In the "Projects" tab select "Manage Kits..."
+8. Select the default "Desktop" kit and select "Clang (x86 64bit in /usr/bin)" as compiler
+9. Select LLDB as debugger (you might need to set the path to your installation)
+10. Start debugging with Qt Creator
+
+Notes
+-----
+
+* Tested on OS X 10.8 through 10.13 on 64-bit Intel processors only.
+
+* Building with downloaded Qt binaries is not officially supported. See the notes in [#7714](https://github.com/bitcoin/bitcoin/issues/7714)
