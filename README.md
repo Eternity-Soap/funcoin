@@ -14,4 +14,8 @@ Funcoin properties:
 
 -Maximum supply of 350k coins
 
+[Funcoin Block Explorer](http://159.65.188.63:8000/)
+
+[Funcoin Faucet](http://159.65.188.63:8000/)
+
 # [Funcoin Release](https://github.com/schyczewski/funcoin/releases/tag/v0.8)
