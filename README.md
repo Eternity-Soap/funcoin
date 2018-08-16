@@ -16,6 +16,6 @@ Funcoin properties:
 
 [Funcoin Block Explorer](http://159.65.188.63:8000/)
 
-[Funcoin Faucet](http://159.65.188.63:8000/)
+[Funcoin Faucet](http://159.65.188.63/)
 
 # [Funcoin Release](https://github.com/schyczewski/funcoin/releases/tag/v0.8)
