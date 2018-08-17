@@ -2,13 +2,13 @@
 # Copyright (c) 2015-2017 The Bitcoin Core developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-"""Test litecoind with different proxy configuration.
+"""Test funcoind with different proxy configuration.
 
 Test plan:
-- Start litecoind's with different proxy configurations
+- Start funcoind's with different proxy configurations
 - Use addnode to initiate connections
 - Verify that proxies are connected to, and the right connection command is given
-- Proxy configurations to test on litecoind side:
+- Proxy configurations to test on funcoind side:
     - `-proxy` (proxy everything)
     - `-onion` (proxy just onions)
     - `-proxyrandomize` Circuit randomization
@@ -18,8 +18,8 @@ Test plan:
     - proxy on IPv6
 
 - Create various proxies (as threads)
-- Create litecoinds that connect to them
-- Manipulate the litecoinds using addnode (onetry) an observe effects
+- Create funcoinds that connect to them
+- Manipulate the funcoinds using addnode (onetry) an observe effects
 
 addnode connect to IPv4
 addnode connect to IPv6
@@ -120,24 +120,24 @@ class ProxyTest(BitcoinTestFramework):
 
         if test_onion:
             # Test: outgoing onion connection through node
-            node.addnode("bitcoinostk4e4re.onion:9333", "onetry")
+            node.addnode("bitcoinostk4e4re.onion:2333", "onetry")
             cmd = proxies[2].queue.get()
             assert(isinstance(cmd, Socks5Command))
             assert_equal(cmd.atyp, AddressType.DOMAINNAME)
             assert_equal(cmd.addr, b"bitcoinostk4e4re.onion")
-            assert_equal(cmd.port, 9333)
+            assert_equal(cmd.port, 2333)
             if not auth:
                 assert_equal(cmd.username, None)
                 assert_equal(cmd.password, None)
             rv.append(cmd)
 
         # Test: outgoing DNS name connection through node
-        node.addnode("node.noumenon:9333", "onetry")
+        node.addnode("node.noumenon:2333", "onetry")
         cmd = proxies[3].queue.get()
         assert(isinstance(cmd, Socks5Command))
         assert_equal(cmd.atyp, AddressType.DOMAINNAME)
         assert_equal(cmd.addr, b"node.noumenon")
-        assert_equal(cmd.port, 9333)
+        assert_equal(cmd.port, 2333)
         if not auth:
             assert_equal(cmd.username, None)
             assert_equal(cmd.password, None)
