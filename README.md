@@ -12,7 +12,7 @@ Funcoin properties:
 
 -Block interval of 5 minutes
 
--Maximum supply of 350k coins
+-Maximum supply of ~400k coins
 
 [Funcoin Block Explorer](http://159.65.188.63:8000/)
 
